@@ -1,17 +1,8 @@
-const { Pool } = require('pg');
-const dotenv = require('dotenv');
-
-dotenv.config();
-
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-});
-
 const initDatabase = async () => {
   const createTableQuery = `
     CREATE TABLE IF NOT EXISTS invoices (
       id SERIAL PRIMARY KEY,
-      invoice_number VARCHAR(50) UNIQUE DEFAULT 'INV-' || to_char(NOW(), 'YYYYMMDD') || '-' || nextval('invoice_seq'),
+      invoice_number VARCHAR(50) UNIQUE,
       client_name VARCHAR(255) NOT NULL,
       client_email VARCHAR(255),
       client_address TEXT,
@@ -23,8 +14,6 @@ const initDatabase = async () => {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
-    
-    CREATE SEQUENCE IF NOT EXISTS invoice_seq START 1000;
   `;
   
   try {
@@ -34,7 +23,3 @@ const initDatabase = async () => {
     console.error('Database initialization error:', error);
   }
 };
-
-initDatabase();
-
-module.exports = { db: pool };
